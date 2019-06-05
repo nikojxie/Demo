@@ -3,6 +3,6 @@ import Vue from 'vue'
 
 export default {
    getBooks :() => {
-     return Vue.http.get(base + '/api/show_books')
+     return Vue.http.get(base.baseUrl + '/api/show_books')
    }
 }
