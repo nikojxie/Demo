@@ -57,8 +57,7 @@ ROOT_URLCONF = 'Demo.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')]
-        ,
+        'DIRS': ['demofront/dist'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -69,6 +68,11 @@ TEMPLATES = [
             ],
         },
     },
+]
+
+# Add for vuejs
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "demofront/dist/static"),
 ]
 
 WSGI_APPLICATION = 'Demo.wsgi.application'

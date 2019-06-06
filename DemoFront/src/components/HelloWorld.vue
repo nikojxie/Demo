@@ -8,17 +8,37 @@
     </el-row>
     <el-row>
       <el-table :data="bookList" style="width: 100%" border>
-        <el-table-column prop="id" label="编号" min-width="100">
-          <template scope="scope"> {{scope.row.pk}}</template>
+        <el-table-column prop="pk" label="编号" min-width="100">
         </el-table-column>
-        <el-table-column prop="book_name" label="书名" min-width=" 100">
-          <template scope="scope"> {{scope.row.fields.book_name}}</template>
+        <el-table-column prop="fields.book_name" label="书名" min-width="100">
+          <template scope=" scope">
+            <span>{{scope.row.fields.book_name}}</span>
+            <el-button type="primary" @click="modifyBook(scope.row.pk)" style="float: right">修改</el-button>
+          </template>
         </el-table-column>
-        <el-table-column prop="add_time" label="添加时间" min-width="100">
-          <template scope=" scope"> {{scope.row.fields.add_time}}</template>
+        <el-table-column prop="fields.add_time" label="添加时间" min-width="100">
+        </el-table-column>
+        <el-table-column label="操作" min-width="100">
+          <template scope=" scope">
+            <el-button type="primary" @click="delBook(scope.row.pk)">删除</el-button>
+          </template>
         </el-table-column>
       </el-table>
     </el-row>
+
+    <el-dialog title="修改书名" :visible.sync="dialogFormVisible">
+      <el-form :model="form">
+        <el-form-item label="新的书名" label-width="200">
+          <el-input v-model="form.name" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="changeName()">确 定</el-button>
+      </div>
+    </el-dialog>
+
+
   </div>
 </template>
 
@@ -30,7 +50,12 @@
     data() {
       return {
         input: '',
-        bookList: []
+        dialogFormVisible:false,
+        bookList: [],
+        modPk:'',
+        form: {
+          name: ''
+        },
       }
     },
     methods: {
@@ -42,7 +67,7 @@
                 message: '添加成功',
                 type: 'success'
               });
-               this.getBooks()
+              this.getBooks()
             }
           })
         } else {
@@ -56,6 +81,40 @@
         apis.getBooks().then(res => {
           this.bookList = res.data.list
         })
+      },
+      delBook(id) {
+        apis.delBook(id).then(res => {
+          if (res.data.msg === 'success') {
+            this.$message({
+              message: '删除成功',
+              type: 'success'
+            });
+            this.getBooks()
+          }
+        })
+      },
+      modifyBook(pk) {
+        this.dialogFormVisible = true
+        this.modPk = pk
+      },
+      changeName(){
+        if (this.form.name || this.form.name === 0) {
+          apis.modifyBook(this.modPk,this.form.name).then(res => {
+            if (res.data.msg === 'success') {
+              this.$message({
+                message: '修改成功',
+                type: 'success'
+              });
+              this.dialogFormVisible = false
+              this.getBooks()
+            }
+          })
+        } else {
+          this.$message({
+            message: '书名不能为空',
+            type: 'warning'
+          });
+        }
       }
     },
     async created() {
