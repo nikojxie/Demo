@@ -12,7 +12,7 @@
           <template scope="scope"> {{scope.row.pk}}</template>
         </el-table-column>
         <el-table-column prop="book_name" label="书名" min-width=" 100">
-          <template scope="scope"> {{scope.row.fields.book_name}}}</template>
+          <template scope="scope"> {{scope.row.fields.book_name}}</template>
         </el-table-column>
         <el-table-column prop="add_time" label="添加时间" min-width="100">
           <template scope=" scope"> {{scope.row.fields.add_time}}</template>
@@ -24,24 +24,42 @@
 
 <script>
   import apis from '../service/api'
+
   export default {
     name: 'HelloWorld',
     data() {
       return {
-        input:'',
-        bookList:[]
+        input: '',
+        bookList: []
       }
     },
-    methods:{
-      addBook(){
-
+    methods: {
+      addBook() {
+        if (this.input || this.input === 0) {
+          apis.addBook(this.input).then(res => {
+            if (res.data.msg === 'success') {
+              this.$message({
+                message: '添加成功',
+                type: 'success'
+              });
+               this.getBooks()
+            }
+          })
+        } else {
+          this.$message({
+            message: '书名不能为空',
+            type: 'warning'
+          });
+        }
+      },
+      getBooks() {
+        apis.getBooks().then(res => {
+          this.bookList = res.data.list
+        })
       }
     },
     async created() {
-      apis.getBooks().then(res => {
-        console.log(res,'@@@')
-      })
-
+      this.getBooks()
     }
   }
 </script>
